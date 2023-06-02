@@ -31,10 +31,12 @@ def login():
             return jsonify(errors='An error occurred while processing your request'), 500
     return jsonify(errors='Invalid request method'), 405
 
+
 @login_manager.user_loader
 def load_user(id):
     user = db.session.execute(db.select(User).filter_by(id=id)).scalar()
     return user
+
 
 @app.route('/api/v1/auth/logout', methods = ['POST','GET'])
 @login_required
@@ -158,7 +160,6 @@ def add_section(round, section):
         db.session.rollback()
     return make_response(response)
         
-    
         
 @app.route("/api/v1/prelim/swimsuit", methods=['POST']) 
 # @login_required
@@ -179,7 +180,8 @@ def prelim_swimsuit():
         except Exception as e:
             print(e)
     return make_response(response)
-        
+
+    
 @app.route("/api/v1/prelim/ballroom", methods=['POST']) 
 # @login_required
 def prelim_ballroom():
@@ -241,6 +243,7 @@ def open_round(round):
         db.session.rollback()
         response['message']='could not open sections of this round.'
     return make_response(response)
+
 
 @app.route("/api/v1/prelims/top10", methods=['GET']) 
 def get_top_ten():
@@ -304,7 +307,8 @@ def top5_vote():
         except Exception as e:
             print(e)
     return make_response(response)
-       
+
+     
 @app.route("/api/v1/top5/top3", methods=['GET'])
 def get_top_three():
     response = {'status':'error'}
@@ -345,6 +349,7 @@ def top3_vote():
         except Exception as e:
             print(e)
     return make_response(response)
+
 
 @app.route("/api/v1/top3/scores", methods=['GET'])
 def get_final_scores():
