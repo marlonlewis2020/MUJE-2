@@ -1,0 +1,25 @@
+__pycache__/
+
+.DS_Store
+Thumbs.db
+
+*.py[cod]
+*$py.class
+*.pyc
+
+# virtualenv
+.venv/
+venv/
+
+# PyCharm
+.idea
+
+# VS Code
+.vscode
+
+# Environment Variables
+.env
+.flaskenv
+
+# Hidden files
+.hidden
