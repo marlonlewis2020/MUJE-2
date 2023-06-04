@@ -1,44 +1,27 @@
 <script setup lang="ts">
   import { ref, onMounted } from 'vue'
   import TheContestants from '../components/TheContestants.vue';
-  import UserForm from '../components/UserForm.vue';
-  
-  import moment from 'moment';
-  moment().tz("America/Los_Angeles").format();
+  import moment from 'moment-timezone';
+
   let id:number  = Number(localStorage['id']);
   
+  let year = moment().tz("Jamaica").year();
   let ladies = ref([]);
-  let year = ref(2023);
-  let ladies_url:string = `/api/v1/contestants/${year.value}`;
-  let lady = ref({});
-  let score = ref(0);
+  let ladies_url:string = `/api/v1/contestants/${year}`;
+  let round = Infinity;
+  let sections = ["Interview","Swimwear", "Evening Wear", "Top-5 Q&A", "Top-3 Q&A"]; 
+  let section = ref(0);
 
-  function score_interview(){
-    let url:string = "api/v1/prelim/interview"
-    fetch(url, {
-      method:'POST',
-      headers:{
-        'Content-Type':'application/json',
-        Authorization: `bearer ${localStorage['token']}`
-      },
-      body:JSON.stringify({
-        'contestant_no': lady.value['contestant_no'],
-        'score': score.value,
-        'year':year.value
-      })
-    })
-    .then((response)=>response.json())
-    .then((result)=>{
-      if (result.status =='success') {
-        close();
-      }
-    })
-  };
-  
+  let open:any[] = [];
+  let closed:any[] = [];
+
+  let update_table = false;
+  let results = [];
+
   onMounted(() => {
 
     fetch(ladies_url, {headers:{
-      // Authorization: `bearer ${localStorage['token']}`
+      Authorization: `bearer ${localStorage['token']}`
     }})
     .then((result) => result.json())
     .then((json_result) => {
@@ -46,27 +29,49 @@
         ladies.value = json_result.data;
       }
     });
+
+    get_sections();
 
   });
 
-  function close() {
-    $("[data-dismiss=modal]").trigger("click");
-  }
-
-  function viewContestant(num) {
-    // 
+  function get_sections() {
+      // get sections that are active
+      const url = "/api/v1/sections";
+      fetch(url, {
+          headers:{
+              Authorization: `bearer ${localStorage['token']}`
+          }
+      })
+      .then((response) => response.json())
+      .then((data) => {
+          if (data.status=="success") {
+              // update section status
+              let sections = data.data;
+              sections.forEach((section:Record<string,number|string>) => {
+                  if (section['active'] == 1 || section['active']) {
+                      open.push(section);
+                      // set round to the lowest round of all the active sections
+                      if (Number(section['round']) < round) {
+                          round = Number(section['round']);
+                      }
+                  } else {
+                      closed.push(section);
+                  }
+              });
+          }
+      });
   }
 
   function get_contestants() {
-    fetch(ladies_url, {headers:{
+      fetch(ladies_url, {headers:{
       // Authorization: `bearer ${localStorage['token']}`
-    }})
-    .then((result) => result.json())
-    .then((json_result) => {
+      }})
+      .then((result) => result.json())
+      .then((json_result) => {
       if (json_result.status=="success") {
-        ladies.value = json_result.data;
+          ladies.value = json_result.data;
       }
-    });
+      });
   }
 
 </script>
@@ -74,74 +79,16 @@
 <template>
   <main>
     <div class="container-fluid">
-      <div class="buttons">
-
-        <button 
-          v-if="id" 
-          type="button" 
-          value="New Order"
-          class="admin text-center btn btn-primary" 
-          data-toggle="modal" 
-          data-target="#addJudgeModal">
-          Add Judge
-        </button>
-
-        <button 
-          v-if="id" 
-          type="button" 
-          value="New Customer" 
-          class="admin text-center btn btn-dark" 
-          data-toggle="modal" 
-          data-target="#addContestantModal">
-          Add Contestant
-        </button>
-
-        <button 
-          v-if="id" 
-          type="button" 
-          value="New Customer" 
-          class="admin text-center btn btn-dark" 
-          data-toggle="modal" 
-          data-target="#scoreContestantModal" hidden>
-          Score Contestant
-        </button>
-
-        <div class="form-group">
-          <br/>
-          <form action="" method="POST">
-            <label for="delivery_time"><small><strong>Year</strong></small></label>
-            <select v-model="year" name="delivery_time" id="delivery_time" cols="30" rows="2" class="form-control av_period" maxlength="75" required>
-              <option value=""></option>
-              <option value="2023" selected>2023</option>
-            </select>
-            <button type="button" 
-              @click="get_contestants"
-              id="contestants_update" 
-              class="btn-success" 
-              style="margin:5px 30px;border-radius:5px;">Check</button>
-          </form>
-        </div>
-        <br/>
-      </div>
-
+      
       <div class="row">
         <div class="dashboard-tables">
 
           <div class="row row-component">
             <TheContestants id="ladies" 
             v-if="ladies.length"
-            :ladies="ladies"
-            @score="score"
-            @view="viewContestant" 
-            @close="close"/>   
+            :ladies="ladies"/>   
           </div>
-    
-          <!-- Add Judge Modal -->
-          <div id="addtruckmodal" class="modal fade">
-            <div class="modal-dialog">
-                <UserForm @close="close" />
-            </div>
-          </div>
+
         </div> 
 
       </div>
@@ -180,12 +127,7 @@
     margin-left:180px;
   }
 
-  .buttons {
-    position:fixed;
-    float:left;
-    margin-right:20px;
-    width:120px;
-  }
+  
 
   .admin {
     width:100%;

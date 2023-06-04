@@ -39,11 +39,15 @@
 
 <script setup lang="ts">
 
+    import { ref } from 'vue';
+
     const prop = defineProps(['order']);
     const emit = defineEmits<{
         (event:'cancel'):void
-        (event:'update'):void
+        (event:'score'):void
     }>();
+    let score = ref(0);
+    let lady:{};
 
 </script>
 

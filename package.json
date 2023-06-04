@@ -11,6 +11,7 @@
     "bootstrap-vue": "^2.23.1",
     "moment": "^2.29.4",
     "moment-timezone": "^0.5.43",
+    "sweetalert2": "^11.4.8",
     "volar": "^0.0.0",
     "vue": "^3.2.47",
     "vue-router": "^4.1.6",
@@ -23,6 +24,7 @@
     "bootstrap": "^4.6.2",
     "jquery": "^3.6.4",
     "popper.js": "^1.16.1",
-    "vite": "^4.1.4"
+    "vite": "^4.1.4",
+    "vue-toastification": "^2.0.0-rc.5"
   }
 }
