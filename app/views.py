@@ -77,6 +77,34 @@ def generate_token():
     return token
 
 
+@app.route("/api/v1/sections")
+def get_sections():
+    response = {
+        "status":"error"
+    }
+    data = []
+    try:
+        payload = get_request_payload()
+        if payload and (payload['role']=='admin' or payload['role']=='chief'):
+            uid = payload['id']
+            load_user(str(uid))
+            sections = db.session.query(Section).all()
+            for section in sections:  
+                data.append({
+                    "id":section.id,
+                    "round":section.round,
+                    "section":section.section,
+                    "active":section.active
+                })
+                response['status']="success"
+                response['data']=data
+        else:
+            response['message'] = "Unauthorized access"
+    except Exception as e:
+        print(e)
+        response['message']="Unable to get pageant sections at this time."
+    return make_response(response)
+
 @app.route("/api/v1/contestants/<int:year>")
 # @login_required
 def get_contestant(year):
