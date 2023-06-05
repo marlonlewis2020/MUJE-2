@@ -1,5 +1,5 @@
 <template>
-  <h1>MUJE 2023</h1>
+  <h1>MUJE {{ year }}</h1>
   <div class="container">
     <div class="row form-group">
       <h5>Select Section</h5>
@@ -10,7 +10,7 @@
         :value="sect" 
         :id="String(index)" 
         class="form-control col-md-2 col-sm-6 btn btn-primary" 
-        @click="set_section(index)">
+        @click="update(index)">
       </div>
     </div>
     <div class="row cards">
@@ -42,6 +42,7 @@
             <div class=modal-body>
               <SingleContestant :lady="contestant" 
                 :section="sections[section]"
+                @set_score="score_contestant"
                 @close="close" />
             </div>
           </div>
@@ -54,9 +55,11 @@
 
 <script setup lang="ts">
     import moment from 'moment-timezone';
-    import { ref } from 'vue';
+    import { ref, onMounted } from 'vue';
     import SingleContestant from '../components/SingleContestant.vue';
     import { clear, close, confirm_submit } from '../js/form-controls';
+
+    const prop = defineProps(['ladies']);
 
     const year = moment().tz("Jamaica").year();
     let contestant = ref({
@@ -78,14 +81,81 @@
 
     let sections = ["Interview","Swimwear", "Evening Wear", "Top-5 Q&A", "Top-3 Q&A"]; 
     let fields = ["interview", "swimsuit", "ballroom", "q_and_a", "q_and_a"];
-    let section = ref(0);
+    let section = 0;
 
-    function set_section(num:number) {
-      section.value = num;
+    let round = Infinity;
+
+    let open:any[] = [];
+    let closed:any[] = [];
+
+    let ladies = ref([]);
+    let ladies_url:string[] = [`/api/v1/contestants/${year}`, '/api/v1/prelims/top5', '/api/v1/top5/top3'];
+    
+    onMounted(() => {
+      get_sections();
+      get_contestants();
+    });
+
+    let url_round = 0;
+
+    function get_contestants() {
+      fetch(ladies_url[url_round], {headers:{
+        Authorization: `bearer ${localStorage['token']}`
+      }})
+      .then((result) => result.json())
+      .then((data) => {
+        if (data.status=="success") {
+          ladies.value = data.data;
+        }
+      });
     }
 
-    function update_contestants() {
-      //
+    function get_sections() {
+      // get sections that are active
+      const url = "/api/v1/sections";
+      fetch(url, {
+        headers:{
+          Authorization: `bearer ${localStorage['token']}`
+        }
+      })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.status=="success") {
+          // update section status
+          let sections = data.data;
+          sections.forEach((section:Record<string,number|string>) => {
+              if (section['active'] == 1 || section['active']) {
+                open.push(section);
+                // set round to the lowest round of all the active sections
+                if (Number(section['round']) < round) {
+                  round = Number(section['round']);
+                }
+              } else {
+                closed.push(section);
+              }
+          });
+        }
+      });
+    }
+
+    function set_section(num:number) {
+      section = num;
+      update_ladies(num);
+    }
+
+    function update(section:number) {
+      set_section(section);
+    }
+
+    function update_ladies(section_num:number) {
+      if (section_num <3) {
+        url_round = 0;
+      } else if (section_num == 3) {
+        url_round = 1;
+      } else {
+        url_round = 2;
+      }
+      get_contestants();
     }
 
     function get_numbers(index:number) {
@@ -94,13 +164,11 @@
       return numbers;
     }
 
-    const prop = defineProps(['ladies']);
-
     function view(index:number){
         contestant.value = prop.ladies[index];
     }
 
-    function score(round:number, section:number, score:number) {
+    function score_contestant(score:number) {
       let form = {
         "interview":score,
         "swimsuit":score,
@@ -116,8 +184,8 @@
           Authorization: `bearer ${localStorage['token']}`
         },
         method:"POST",
-        body:JSON.stringify()
-      })
+        body:JSON.stringify(form)
+      });
 
     }
 
