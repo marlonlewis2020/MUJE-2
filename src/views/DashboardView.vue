@@ -2,7 +2,7 @@
   import TheContestants from '../components/TheContestants.vue';
 
   let id:number  = Number(localStorage['id']);
-  let type:number  = Number(localStorage['role']);
+  let authorized:boolean  = localStorage['role'] == "admin" || localStorage['role'] == "chief" || localStorage['role'] == "judge";
 
 </script>
 
@@ -10,8 +10,8 @@
   <main>
     <div class="container-fluid">
 
-      <div class="component">
-        <TheContestants id="ladies"/>   
+      <div v-if="id && authorized" class="component">
+        <TheContestants />   
       </div>
 
     </div>

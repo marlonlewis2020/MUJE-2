@@ -14,17 +14,17 @@
       </div>
     </div>
     <div class="row cards">
-      <h5>Contestants</h5>
+      <h5>{{ sections[section] }} Contestants</h5>
         <div v-for="(lady, index) in ladies"
         :key="index"
-        @click="view(index)" 
         data-toggle="modal" 
         data-target="#viewContestantModal" class="card">
           <img class="card-img-top" :src="lady['photo']" alt="Card image cap">
           <div class="card-body">
             <h5 class="card-title">{{ lady['contestant_no'] }}</h5>
             <p class="card-text">{{ lady['title'] }}</p>
-            <a href="#" class="btn btn-primary">Score {{ section }}</a>
+            <!-- Only allow girl to be reated if the section is opened -->
+            <input type="button" value="Score" class="btn btn-primary" @click="view(index)" :disabled="is_open(index)">
           </div>
         </div>
     </div>
@@ -37,13 +37,12 @@
           <div class="modal-content">
             <div class='modal-header'>
               <h5> Contestant No. {{ contestant['contestant_no'] }} </h5>
-              <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close" @click="close" >x</button>
+              <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close" @click="close" ></button>
             </div>
             <div class=modal-body>
-              <SingleContestant :lady="contestant" 
-                :section="sections[section]"
-                @set_score="score_contestant"
-                @close="close" />
+              <SingleContestant :lady="contestant"
+                :numbers="get_numbers(section)"
+                @scored="score_contestant" />
             </div>
           </div>
         </div>
@@ -59,9 +58,8 @@
     import SingleContestant from '../components/SingleContestant.vue';
     import { clear, close, confirm_submit } from '../js/form-controls';
 
-    const prop = defineProps(['ladies']);
-
     const year = moment().tz("Jamaica").year();
+
     let contestant = ref({
       'year':0,
       'title':"",
@@ -79,9 +77,9 @@
       "top3"
     ]
 
-    let sections = ["Interview","Swimwear", "Evening Wear", "Top-5 Q&A", "Top-3 Q&A"]; 
-    let fields = ["interview", "swimsuit", "ballroom", "q_and_a", "q_and_a"];
-    let section = 0;
+    let sections = ["Interview","Swimwear", "Evening Wear", "Top-5 Q&A", "Top-3 Q&A"]; // Section Names
+    let fields = ["interview", "swimsuit", "ballroom", "q_and_a", "q_and_a"]; // 
+    let section = ref(0);
 
     let round = Infinity;
 
@@ -98,17 +96,15 @@
 
     let url_round = 0;
 
-    function get_contestants() {
-      fetch(ladies_url[url_round], {headers:{
-        Authorization: `bearer ${localStorage['token']}`
-      }})
-      .then((result) => result.json())
-      .then((data) => {
-        if (data.status=="success") {
-          ladies.value = data.data;
+    function is_open(i:number) {
+      open.forEach((sect:string) => {
+        if (sect == fields[i]) {
+          return true;
         }
-      });
+      })
+      return false
     }
+
 
     function get_sections() {
       // get sections that are active
@@ -125,26 +121,26 @@
           let sections = data.data;
           sections.forEach((section:Record<string,number|string>) => {
               if (section['active'] == 1 || section['active']) {
-                open.push(section);
+                open.push(section['section']);
                 // set round to the lowest round of all the active sections
                 if (Number(section['round']) < round) {
                   round = Number(section['round']);
                 }
               } else {
-                closed.push(section);
+                closed.push(section['section']);
               }
           });
         }
       });
     }
 
-    function set_section(num:number) {
-      section = num;
-      update_ladies(num);
-    }
-
     function update(section:number) {
       set_section(section);
+    }
+
+    function set_section(num:number) {
+      section.value = num;
+      update_ladies(num);
     }
 
     function update_ladies(section_num:number) {
@@ -158,33 +154,46 @@
       get_contestants();
     }
 
+    function get_contestants() {
+      fetch(ladies_url[url_round], {headers:{
+        Authorization: `bearer ${localStorage['token']}`
+      }})
+      .then((result) => result.json())
+      .then((data) => {
+        if (data.status=="success") {
+          ladies.value = data.data;
+        }
+      });
+    }
+
     function get_numbers(index:number) {
-      let size = [50, 25, 25, 100, 100];
+      let size = [50, 25, 25, 10, 10];
       let numbers = Array.from({length:size[index]}, (_,i) => ++i);
       return numbers;
     }
 
     function view(index:number){
-        contestant.value = prop.ladies[index];
+        contestant.value = ladies.value[index];
     }
 
     function score_contestant(score:number) {
-      let form = {
-        "interview":score,
-        "swimsuit":score,
-        "ballroom":score,
-        "q_and_a":score,
-        "year":year,
-        "contestant_no":contestant.value['contestant_no'],
-      };
-      let url:string = `/api/v1/${rounds[section]}`;
+      
+      let formData = new FormData();
+      formData.append('interview', String(score));
+      formData.append('swimsuit', String(score));
+      formData.append('ballroom', String(score));
+      formData.append('q_and_a', String(score));
+      formData.append('year', String(year));
+      formData.append('contestant_no', String(contestant.value['contestant_no']));
+      let url:string = `/api/v1/${rounds[section.value]}`;
 
       fetch(url, {
         headers:{
-          Authorization: `bearer ${localStorage['token']}`
+          Authorization: `bearer ${localStorage['token']}`,
+          // "Content-Type": 'multipart/form-data'
         },
         method:"POST",
-        body:JSON.stringify(form)
+        body:formData
       });
 
     }
