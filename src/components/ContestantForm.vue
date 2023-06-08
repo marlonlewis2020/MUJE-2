@@ -9,42 +9,46 @@
               <div class="form-group">
                   <div class="form-group contestant">
                     <h5> Contestant Information </h5>
+                    <div class="section1">
+                      <div class="form-group">
+                        <label for="year"> Year </label>
+                        <select 
+                        :v-model="year"
+                          name="year" 
+                          id="year" 
+                          class="form-control">
+                            <option></option>
+                            <option 
+                                v-for="(yr, index) in years" 
+                                :value="yr" 
+                                :key='index' > {{ yr }}
+                            </option>
+                        </select>
+                      </div>
+                      <div class="form-group">
+                        <label for="contestant_no"> Contestant No. </label>
+                        <select name="contestant_no" id="contestant_no" class="form-control">
+                            <option 
+                                v-for="(number, index) in numbers_15" 
+                                :value="number" 
+                                :key='index' > {{ number }}
+                            </option>
+                        </select>
+                      </div>
+                    </div>
 
-                    <div class="form-group">
-                      <label for="year"> Year </label>
-                      <select 
-                      :v-model="year"
-                        name="year" 
-                        id="year" 
-                        class="form-control">
-                          <option></option>
-                          <option 
-                              v-for="(yr, index) in years" 
-                              :value="yr" 
-                              :key='index' > {{ yr }}
-                          </option>
-                      </select>
-                    </div>
-                    <div class="form-group">
-                      <label for="contestant_no"> Contestant No. </label>
-                      <select name="contestant_no" id="contestant_no" class="form-control">
-                          <option 
-                              v-for="(number, index) in numbers_15" 
-                              :value="number" 
-                              :key='index' > {{ number }}
-                          </option>
-                      </select>
+                    <div class="section2">
+                      <div class="form-group">
+                        <label for="title"> Title </label><span><small>(i.e. Miss Company Name)</small></span>
+                        <input class="form-control" type="text" name="title" id="title">
+                      </div>
+                      
+                      <div class="form-group">
+                        <label for="name"> Full Name </label>
+                        <input class="form-control" type="text" name="name" id="name">
+                      </div>
                     </div>
 
-                    <div class="form-group">
-                      <label for="title"> Title </label><span><small>(i.e. Miss Company Name)</small></span>
-                      <input type="text" name="title" id="title">
-                    </div>
-                    
-                    <div class="form-group">
-                      <label for="name"> Full Name </label>
-                      <input type="text" name="name" id="name">
-                    </div>
 
                     <div class="form-group">
                       <label for="photo"> Photo </label>
@@ -63,7 +67,7 @@
 
       <div class="modal-footer">
           <button type="button" 
-            v-on:click="confirm_submit" 
+            v-on:click="submit" 
             class="btn btn-primary">
               <img id="save" src="../components/icons/save.png" alt="save" class="text-white" />  
               Save
@@ -121,8 +125,9 @@
         .then((data)=>{
           if (data.status=="success"){
             // notify of success
-            confirmed('Contestant has been added successfully!');
             close();
+            $('img#preview-image')[0].src="";
+            confirmed('Contestant has been added successfully!');
           } else {
             // notify of error
             failed('Oops! \n\n'+data.message);
@@ -133,6 +138,29 @@
 </script>
 
 <style scoped>
+
+  .section1,.section2 {
+    display:flex;
+    flex-direction: row;
+    justify-content: space-between;
+  }
+
+  .section2 div, .section2 div {
+    width:50%;
+  }
+
+  .section2 {
+    margin-top:20px;
+    margin-bottom:20px;
+  }
+
+  input[type="text"] {
+    width:90%;
+  }
+
+  #preview-image {
+    width:100%;
+  }
 
   .modal-header {
     background-color:rgb(89, 89, 152);

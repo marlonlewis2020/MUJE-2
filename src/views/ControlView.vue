@@ -1,17 +1,18 @@
 <script setup lang="ts">
-    import { onMounted } from 'vue'
+    import { ref, onMounted } from 'vue'
     import UserForm from '../components/UserForm.vue';
     import ContestantForm from '../components/ContestantForm.vue';
-    import BOOTBOX from '../js/bootbox';
+    import { clear, close, confirm_submit, BOOTBOX } from '../js/form-controls';
     // import Bootstrap from 'bootstrap-vue';
 
     let id:number  = Number(localStorage['id']);
-    let round = Infinity;
+    let result_title = ref("");
+    let round = ref(Infinity);
     let sections = [];
     let update_table = false;
     let open = [];
     let closed = [];
-    let results = [];
+    let results = ref([]);
 
     onMounted(()=>{
         get_sections();
@@ -30,12 +31,12 @@
             if (data.status=="success") {
                 // update section status
                 sections = data.data;
-                sections.forEach((section) => {
+                sections.forEach((section:any) => {
                     if (section['active'] == 1 || section['active']) {
                         open.push(section);
                         // set round to the lowest round of all the active sections
                         if (section.round < round) {
-                            round = section['round'];
+                            round.value = section['round'];
                         }
                     } else {
                         closed.push(section);
@@ -43,10 +44,6 @@
                 });
             }
         });
-    }
-
-    function close() {
-        $("[data-dismiss=modal]").trigger("click");
     }
 
     function close_round_confirm() {
@@ -116,30 +113,50 @@
     }
 
     // get top 10
+    function best_in_swimsuit() {
+        let url = '/api/v1/prelims/best_swimsuit';
+        update_results(url);
+        result_title.value = "Best In Swim Wear";
+    }
+
+    // get top 10
+    function best_in_evening() {
+        let url = '/api/v1/prelims/best_evening';
+        update_results(url);
+        result_title.value = "Best In Evening Gown";
+    }
+
+    // get top 10
     function get_top_10() {
         let url = '/api/v1/prelims/top10';
         update_results(url);
+        result_title.value = "Top 10 Finalists";
     }
-    
+
     // get top 5
     function get_top_5() {
         let url = '/api/v1/prelims/top5';
         update_results(url);
+        result_title.value = "Top 5 Finalists";
     }
 
     // get top 3
     function get_top_3() {
         let url = '/api/v1/top5/top3';
         update_results(url);
+        result_title.value = "Top 3 Finalists";
     }
 
     // get winners
     function get_final_scores() {
         let url = "/api/v1/top3/scores";
         update_results(url);
+        result_title.value = "Top 3 Final Scores";
     }
 
     function update_results(url:string) {
+        results.value = [];
+        result_title.value = "";
         fetch(url, {
             headers: {
                 Authorization: `bearer ${localStorage['token']}`
@@ -150,142 +167,116 @@
         .then((data) => {
             if (data.status=="success") {
                 update_table = true;
-                results = data.data;
+                results.value = data.data;
             }
         });
     }
 
 </script>
-<template>
-
-    <div class="sections">
-        <section class="section">
-            <button type="button" 
-                value="Add Judge"
-                class="admin text-center btn btn-primary" 
-                data-toggle="modal" 
-                data-target="#addJudgeModal">
-                Add Judge
-            </button>
-        </section>
-        <section class="section">
-            <button type="button" 
-                value="Add Judge"
-                class="admin text-center btn btn-primary" 
-                data-toggle="modal" 
-                data-target="#addContestantModal">
-                Add Contestant
-            </button>
-        </section>
-    </div>
+<template> 
 
     <!-- ANALYTICS -->
-    <div class="control">
+    <div class="container ">
         <!-- Show sections -->
-        <div class="rounds">
-            <h4> Rounds </h4>
-            <div class="prelim round sections">
-                <h5> Round 1 - Prelims </h5>
-                <span v-if="round>1">&nbsp;(CLOSED)&nbsp;</span>
-                <span v-if="round==1">&nbsp;(OPEN)&nbsp;</span>
-                <section class="interview section">
+        <div class="row control_panel">
+            <div class="controls sections">
+
+                <section class="switches section">
                     <!-- Show section options -->
-                    <div class="options">
-                        <div class="option">
+                    <div class="switch_buttons">
+                        <div class="buttons">
                             <!-- close round -->
-                            <button v-if="round==1" class="btn btn-warning" @click="close_round_confirm">Close Prelims</button>
-                            <button v-else class="btn btn-warning"><small>Re-Open Prelims</small></button>
+                            <button v-if="round==1" class="button btn btn-warning" @click="close_round_confirm">Close PrelimsVoting</button>
+                            <button v-else class="button btn btn-warning"><small>Open Prelims Voting </small></button>
+                            
+                            <!-- close round -->
+                            <button v-if="round==2" class="button btn btn-warning"> Close Top 5 Voting </button>
+                            <button v-else class="button btn btn-warning"><small> Open Top 5 Voting</small></button>
+                            
+                            <!-- close round -->
+                            <button v-if="round==2" class="button btn btn-warning"> Close Top 3 Voting </button>
+                            <button v-else class="button btn btn-warning"><small> Open Top 3 Voting</small></button>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="table_results">
+                    <!-- Show Results -->
+                    <!-- Show the results from the scoring buttons in each round. Updated by the buttons above -->
+                    <h5> {{ result_title }} </h5>
+                    <div class="results">
+                        <table class="table">
+                            <thead class="table-stripe">
+                                <th v-if="result_title == 'Top 3 Final Scores'">Position</th>
+                                <th>Contestant No.</th>
+                                <th>Name</th>
+                                <th>Title</th>
+                                <th>Score</th>
+                            </thead>
+                            <tbody>
+                                <tr v-for="(contestant, index) in results"
+                                    :key="index">
+                                    <td v-if="result_title == 'Top 3 Final Scores'">{{ index+1 }}</td>
+                                    <td >{{ contestant['contestant_no'] }}</td>
+                                    <td >{{ contestant['name'] }}</td>
+                                    <td >{{ contestant['title'] }}</td>
+                                    <td >{{ contestant['score'] }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                </section>
+
+                <section class="results section">
+                    <div class="res_buttons">
+                        <div class="buttons">
+                            <!-- Get Best in Swim Wear -->
+                            <button class="button btn btn-primary" @click="best_in_swimsuit" :disabled="round<2">Best in Swim Wear</button>
+                            <!-- Get Best in Evening Gown -->
+                            <button class="button btn btn-primary" @click="best_in_evening" :disabled="round<2">Best in Evening Gown</button>
+                            
                             <!-- Get Top 10 -->
-                            <button class="btn btn-primary" :disabled="round<2">Get Top 10</button>
+                            <button class="button btn btn-primary" @click="get_top_10" :disabled="round<2">Get Top 10</button>
                             <!-- Get Top 5 -->
-                            <button class="btn btn-primary" :disabled="round<2">Get Top 5</button>
-                        </div>
-                    </div>
-                    
-                </section>
-                
-                <section class="swimsuit section">
-                    <!-- Show section options -->
-                    <div class="options">
-                        <div class="option">
-                            
-                        </div>
-                    </div>
-                    
-                </section>
-                
-                <section class="ballroom section">
-                    <!-- Show section options -->
-                    <div class="options">
-                        <div class="option">
-                            
-                        </div>
-                    </div>
-                    
-                </section>
-            </div>
-    
-            <div class="top5 round sections">
-                <h5> Round 2 - Top 5 </h5>
-                <span v-if="round==2">&nbsp;(OPEN)&nbsp;</span>
-                <span v-else>&nbsp;(CLOSED)&nbsp;</span>
-                <section class="q_and_a section">
-                    <!-- Show section options -->
-                    <div class="options">
-                        <div class="option">
-                            <!-- close round -->
-                            <button v-if="round==2" class="btn btn-warning"> Close Prelims </button>
-                            <button v-else class="btn btn-warning"><small> Re-Open Prelims </small></button>
+                            <button class="button btn btn-primary" @click="get_top_5" :disabled="round<2">Get Top 5</button>
                             <!-- Get Top 3 -->
-                            <button class="btn btn-primary" :disabled="round<3"> Get Top 3 </button>
+                            <button class="button btn btn-primary" @click="get_top_3" :disabled="round<3"> Get Top 3 </button>
+                            <!-- Get Winner -->
+                            <button class="button btn btn-primary" @click="get_final_scores" :disabled="round<3"> Get Final Scores </button>
                         </div>
                     </div>
                 </section>
             </div>
-    
-            <div class="top3 round sections">
-                <h5> Top 3 Round </h5>
-                <span v-if="round==3">&nbsp;(OPEN)&nbsp;</span>
-                <span v-else>&nbsp;(CLOSED)&nbsp;</span>
-                <section class="section">
-                    <!-- Show section options -->
-                    <div class="options">
-                        <div class="option">
-                            <!-- close round -->
-                            <button class="btn btn-warning"></button>
-                            <!-- Get Final Scores -->
-                            <button class="btn btn-primary" :disabled="round<4"></button>
-                        </div>
-                    </div>
-    
-                </section>
-            </div>
         </div>
 
-        <!-- Show Results -->
-        <div v-if="round<Infinity" class="results">
-            <!-- Show the results from the scoring buttons in each round. Updated by the buttons above -->
-            <h5>Round {{ round }} Results</h5>
-            <div class="results">
-                <table class="table">
-                    <thead>
-                        <th></th>
-                    </thead>
-                    <tbody>
-                        <tr v-for="(contestant, index) in results"
-                            :key="index">
-                            <td>{{ index+1 }}</td>
-                            <td >{{ contestant.contestant_no }}</td>
-                            <td >{{ contestant.name }}</td>
-                            <td >{{ contestant.title }}</td>
-                            <td >{{ contestant.score }}</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
+        <div class="add_buttons row text-center">
+            <section class="adds section col-sm-6">
+                <button type="button" 
+                    value="Add Judge"
+                    class="admin text-center btn btn-primary" 
+                    data-toggle="modal" 
+                    data-target="#addJudgeModal">
+                    Add Judge
+                </button>
+            </section>
+            <section class="adds section col-sm-6">
+                <button type="button" 
+                    value="Add Judge"
+                    class="admin text-center btn btn-primary" 
+                    data-toggle="modal" 
+                    data-target="#addContestantModal">
+                    Add Contestant
+                </button>
+            </section>
+        </div>
+
+        <div class="row">
 
         </div>
+
     </div>
+
 
     <!-- MODALS -->
     <div id="addJudgeModal" class="modal fade">
@@ -309,5 +300,30 @@
         width:120px;
     }
 
+    .controls {
+        display:grid;
+        grid-template-columns: 1fr 4fr 1fr;
+    }
+
+    .control {
+        margin-top:5px;
+    }
+
+    .add_buttons {
+        display: flex;
+        flex-direction: row;
+        justify-content:center;
+
+    }
+
+    .button {
+        margin-top: 10px;
+    }
+
+    .adds {
+        width:fit-content;
+        margin-right:10px;
+        bottom:5px;
+    }
 
 </style>

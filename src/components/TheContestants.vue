@@ -1,25 +1,23 @@
 <template>
   <h1>MUJE {{ year }}</h1>
   <div class="container">
-    <div class="row form-group">
-      <h5>Select Section</h5>
-      <div v-for="(sect, index) in sections"  
-      :key="index">
-        <input type="button"
+    <div class="row section_buttons">
+      <input v-for="(sect, index) in sections"  
+        class="bg-warning form-control button btn btn-primary" 
+        :key="index" type="button"
         :name="sect" 
         :value="sect" 
         :id="String(index)" 
-        class="form-control col-md-2 col-sm-6 btn btn-primary" 
         @click="update(index)">
-      </div>
     </div>
+    <h5>{{ sections[section] }} Contestants</h5>
     <div class="row cards">
-      <h5>{{ sections[section] }} Contestants</h5>
         <div v-for="(lady, index) in ladies"
         :key="index"
         data-toggle="modal" 
-        data-target="#viewContestantModal" class="card">
-          <img class="card-img-top" :src="lady['photo']" alt="Card image cap">
+        data-target="#viewContestantModal" 
+        class="card">
+          <img class="card-img-top" :src="`src/components/images/${lady['photo']}`" alt="Card image cap">
           <div class="card-body">
             <h5 class="card-title">{{ lady['contestant_no'] }}</h5>
             <p class="card-text">{{ lady['title'] }}</p>
@@ -58,7 +56,7 @@
     import SingleContestant from '../components/SingleContestant.vue';
     import { clear, close, confirm_submit } from '../js/form-controls';
 
-    const year = moment().tz("Jamaica").year();
+    const year = moment().tz("Jamaica").year() ;
 
     let contestant = ref({
       'year':0,
@@ -155,6 +153,7 @@
     }
 
     function get_contestants() {
+      ladies.value = [];
       fetch(ladies_url[url_round], {headers:{
         Authorization: `bearer ${localStorage['token']}`
       }})
@@ -167,7 +166,7 @@
     }
 
     function get_numbers(index:number) {
-      let size = [50, 25, 25, 10, 10];
+      let size = [35, 35, 35, 10, 10];
       let numbers = Array.from({length:size[index]}, (_,i) => ++i);
       return numbers;
     }
@@ -177,7 +176,7 @@
     }
 
     function score_contestant(score:number) {
-      
+      close();
       let formData = new FormData();
       formData.append('interview', String(score));
       formData.append('swimsuit', String(score));
@@ -208,5 +207,22 @@
     grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
     grid-gap: 5px;
     padding: 7px;
+  }
+
+  .section_buttons {
+    display:flex;
+    flex-direction:row;
+    justify-content:space-evenly;
+    margin-bottom:30px;
+  }
+
+  .button {
+    width:fit-content;
+    border:none;
+    box-shadow: 2px 2px gray;
+  }
+  .button:hover {
+    color:blue;
+    box-shadow: 1px 1px gray;
   }
 </style>

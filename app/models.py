@@ -104,7 +104,8 @@ class Contestant(db.Model):
                     'contestant_no':lady.contestant_no,
                     'title':lady.title,
                     'name':lady.name,
-                    'photo':lady.photo_path(),
+                    'photo':lady.photo,
+                    'photo_path':lady.photo_path(),
                     'muje_region':lady.muje_region
                 })
         except Exception as e:
@@ -246,9 +247,29 @@ class PrelimScoring(db.Model):
             return "success", True
         return "error", False
     
-    def avg_interview_scores(self):
-        avg_interviews = db.session.query(PrelimScoring.contestant_no, func.avg(PrelimScoring.interview).label('interview_average')).all()
-        return avg_interviews
+    @staticmethod
+    def best_swimsuit_score():
+        scores = []
+        try:
+            results = db.session.execute(text("SELECT p.contestant_no, c.name, c.title, ROUND(SUM(p.swimsuit) / COUNT(p.judge)) as average, c.photo FROM prelimscoring as p JOIN contestants as c ON p.contestant_no=c.contestant_no GROUP BY p.contestant_no ORDER BY average DESC")).all()
+            for data in results:
+                scores.append({'contestant_no':data[0], 'name':data[1], 'title':data[2], 'score':int(data[3]), 'photo':data[4]})
+        except Exception as e:
+            print(e)
+            scores = []
+        return scores
+    
+    @staticmethod
+    def best_evening_score():
+        scores = []
+        try:
+            results = db.session.execute(text("SELECT p.contestant_no, c.name, c.title, ROUND(SUM(p.ballroom) / COUNT(p.judge)) as average, c.photo FROM prelimscoring as p JOIN contestants as c ON p.contestant_no=c.contestant_no GROUP BY p.contestant_no ORDER BY average DESC")).all()
+            for data in results:
+                scores.append({'contestant_no':data[0], 'name':data[1], 'title':data[2], 'score':int(data[3]), 'photo':data[4]})
+        except Exception as e:
+            print(e)
+            scores = []
+        return scores
     
     def avg_swimsuit_scores(self):    
         avg_swimsuit = db.session.query(PrelimScoring.contestant_no, func.avg(PrelimScoring.swimsuit).label('swimsuit_average')).all()
@@ -273,7 +294,7 @@ class PrelimScoring(db.Model):
             try:
                 sc_data = PrelimScoring.get_final_scores()[0:10]
                 for data in sc_data:
-                    scores.append({'contestant_no':data[0], 'name':data[1], 'title':data[2], 'score':int(data[3]), 'photo':f'{app.config["UPLOAD_FOLDER"]}/{data[4]}'})
+                    scores.append({'contestant_no':data[0], 'name':data[1], 'title':data[2], 'score':int(data[3]), 'photo':data[4]})
             except Exception as e:
                 print(e)
                 scores = []
@@ -286,7 +307,7 @@ class PrelimScoring(db.Model):
             try:
                 sc_data = PrelimScoring.get_final_scores()[0:5]
                 for data in sc_data:
-                    scores.append({'contestant_no':data[0], 'name':data[1], 'title':data[2], 'score':int(data[3]), 'photo':f'{app.config["UPLOAD_FOLDER"]}/{data[4]}'})
+                    scores.append({'contestant_no':data[0], 'name':data[1], 'title':data[2], 'score':int(data[3]), 'photo':data[4]})
             except Exception as e:
                 print(e)
                 scores = []
@@ -372,7 +393,7 @@ class TopFiveScoring(db.Model):
             try:
                 sc_data = TopFiveScoring.get_final_scores()[0:3]
                 for data in sc_data:
-                    scores.append({'contestant_no':data[0], 'name':data[1], 'title':data[2], 'score':int(data[3]), 'photo':f'{app.config["UPLOAD_FOLDER"]}/{data[4]}'})
+                    scores.append({'contestant_no':data[0], 'name':data[1], 'title':data[2], 'score':int(data[3]), 'photo':data[4]})
             except Exception as e:
                 print(e)
                 scores = []
@@ -456,7 +477,7 @@ class TopThreeScoring(db.Model):
             try:
                 sc_data = TopThreeScoring.get_final_scores()[0:3]
                 for data in sc_data:
-                    scores.append({'contestant_no':data[0], 'name':data[1], 'title':data[2], 'score':int(data[3]), 'photo':f'{app.config["UPLOAD_FOLDER"]}/{data[4]}'})
+                    scores.append({'contestant_no':data[0], 'name':data[1], 'title':data[2], 'score':int(data[3]), 'photo':data[4]})
             except Exception as e:
                 print(e)
                 scores = []

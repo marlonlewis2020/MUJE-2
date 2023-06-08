@@ -293,6 +293,49 @@ def get_top_ten():
         print(e)
         response['message']='unable to retrieve top 10 at this time'
     return make_response(response)
+
+
+@app.route("/api/v1/prelims/best_swimsuit", methods=['GET']) 
+def best_swimsuit():
+    
+    response = {'status':'error'}
+    try:
+        payload = get_request_payload()
+        uid = payload['id']
+        load_user(str(uid))
+        if current_user.role == 'chief' or current_user.role == 'admin':
+            response['data'] = PrelimScoring.best_swimsuit_score()
+            if not len(response['data']):
+                response['status']='error'
+            else:
+                response['status'] = 'success'
+        else: 
+            response['message'] = "You are not authorized to view this resource."
+    except Exception as e:
+        print(e)
+        response['message']='unable to retrieve top 10 at this time'
+    return make_response(response)
+
+@app.route("/api/v1/prelims/best_evening", methods=['GET']) 
+def best_evening():
+    
+    response = {'status':'error'}
+    try:
+        payload = get_request_payload()
+        uid = payload['id']
+        load_user(str(uid))
+        if current_user.role == 'chief' or current_user.role == 'admin':
+            response['data'] = PrelimScoring.best_evening_score()
+            if not len(response['data']):
+                response['status']='error'
+            else:
+                response['status'] = 'success'
+        else: 
+            response['message'] = "You are not authorized to view this resource."
+    except Exception as e:
+        print(e)
+        response['message']='unable to retrieve top 10 at this time'
+    return make_response(response)
         
     
 @app.route("/api/v1/prelims/top5", methods=['GET'])     
@@ -306,6 +349,7 @@ def get_top_five():
             response['data'] = PrelimScoring.get_top_five()
             if not len(response['data']):
                 response['status']='error'
+                response['message'] = "The Top 5 has not yet been selected. Prelim Round is not yet closed..."
             else:
                 response['status'] = 'success'
         else: 
@@ -348,6 +392,7 @@ def get_top_three():
             response['data'] = TopFiveScoring.get_top_three()
             if not len(response['data']):
                 response['status']='error'
+                response['message'] = "The Top 3 has not yet been selected. Top 5 Round is not yet closed..."
             else:
                 response['status'] = 'success'
         else: 

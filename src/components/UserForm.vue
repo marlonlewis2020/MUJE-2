@@ -135,8 +135,7 @@
     function submit() {
         let form = new FormData($('#newUserForm')[0]);
         let url = "/api/v1/auth/register";
-
-
+        close();
         fetch(url, {
           headers:{
             Authorization: `bearer ${localStorage['token']}`
