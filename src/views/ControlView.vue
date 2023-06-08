@@ -186,16 +186,22 @@
                     <div class="switch_buttons">
                         <div class="buttons">
                             <!-- close round -->
-                            <button v-if="round==1" class="button btn btn-warning" @click="close_round_confirm">Close PrelimsVoting</button>
-                            <button v-else class="button btn btn-warning"><small>Open Prelims Voting </small></button>
+                            <section class="rounds prelims">
+                                <button class="button btn btn-danger" @click="close_round_confirm">Close PrelimsVoting</button>
+                                <button class="button btn btn-warning"><small>Open Prelims Voting </small></button>
+                            </section>
                             
                             <!-- close round -->
-                            <button v-if="round==2" class="button btn btn-warning"> Close Top 5 Voting </button>
-                            <button v-else class="button btn btn-warning"><small> Open Top 5 Voting</small></button>
+                            <section class="rounds top5">
+                                <button class="button btn btn-danger"> Close Top 5 Voting </button>
+                                <button class="button btn btn-warning"><small> Open Top 5 Voting</small></button>
+                            </section>
                             
                             <!-- close round -->
-                            <button v-if="round==2" class="button btn btn-warning"> Close Top 3 Voting </button>
-                            <button v-else class="button btn btn-warning"><small> Open Top 3 Voting</small></button>
+                            <section class="rounds top3">
+                                <button class="button btn btn-danger"> Close Top 3 Voting </button>
+                                <button class="button btn btn-warning"><small> Open Top 3 Voting</small></button>
+                            </section>
                         </div>
                     </div>
                 </section>
@@ -293,11 +299,16 @@
 </template>
 
 <style>
+
     .buttons {
         position:fixed;
         float:left;
         margin-right:20px;
         width:120px;
+    }
+
+    .rounds {
+        margin-bottom:20px;
     }
 
     .controls {
