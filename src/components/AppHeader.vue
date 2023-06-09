@@ -17,7 +17,7 @@
                   aria-label="Toggle navigation">
                   <span class="navbar-toggler-icon"></span>
               </button>
-              <div class="collapse navbar-collapse" id="navbarResponsive">
+              <div class="collapse navbar-collapse" id="navbarSupportedContent">
                   <ul class="navbar-nav text-uppercase ms-auto py-4 py-lg-0">
                       <li class="nav-item" v-if="!login">
                           <RouterLink v-bind:id='id' class="text-white nav-link" to="/">Home</RouterLink>

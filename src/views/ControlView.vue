@@ -2,7 +2,7 @@
     import { ref, onMounted } from 'vue'
     import UserForm from '../components/UserForm.vue';
     import ContestantForm from '../components/ContestantForm.vue';
-    import { clear, close, confirm_submit, BOOTBOX } from '../js/form-controls';
+    import { clear, close, confirm_submit, confirmed, failed, BOOTBOX } from '../js/form-controls';
     // import Bootstrap from 'bootstrap-vue';
 
     let id:number  = Number(localStorage['id']);
@@ -63,8 +63,8 @@
         BOOTBOX.confirm(text, func, params);
     }
 
-    function close_round() {
-        let url = `/api/v1/round/${round}/close`
+    function close_round(r:number) {
+        let url = `/api/v1/round/${r}/close`
         // update db
         fetch(url,{
             headers:{
@@ -76,10 +76,9 @@
         .then((data)=>{
           if (data.status=="success"){
             // increment round count by 1, if round <= 3
-            round++;
             update_table = false;
             // notify of success
-            confirmed(`Round ${round} has been closed.`);
+            confirmed(`Round ${r} has been closed.`);
             // update sections
             get_sections()
           } else {
@@ -187,20 +186,20 @@
                         <div class="buttons">
                             <!-- close round -->
                             <section class="rounds prelims">
-                                <button class="button btn btn-danger" @click="close_round_confirm">Close PrelimsVoting</button>
-                                <button class="button btn btn-warning"><small>Open Prelims Voting </small></button>
+                                <button class="button btn btn-danger" @click="close_round(1)">Close PrelimsVoting</button>
+                                <button class="button btn btn-warning" @click="open_round(1)"><small>Open Prelims Voting </small></button>
                             </section>
                             
                             <!-- close round -->
                             <section class="rounds top5">
-                                <button class="button btn btn-danger"> Close Top 5 Voting </button>
-                                <button class="button btn btn-warning"><small> Open Top 5 Voting</small></button>
+                                <button class="button btn btn-danger" @click="close_round(2)"> Close Top 5 Voting </button>
+                                <button class="button btn btn-warning" @click="open_round(2)"><small> Open Top 5 Voting</small></button>
                             </section>
                             
                             <!-- close round -->
                             <section class="rounds top3">
-                                <button class="button btn btn-danger"> Close Top 3 Voting </button>
-                                <button class="button btn btn-warning"><small> Open Top 3 Voting</small></button>
+                                <button class="button btn btn-danger" @click="close_round(3)"> Close Top 3 Voting </button>
+                                <button class="button btn btn-warning" @click="open_round(3)"><small> Open Top 3 Voting</small></button>
                             </section>
                         </div>
                     </div>
@@ -243,13 +242,13 @@
                             <button class="button btn btn-primary" @click="best_in_evening" :disabled="round<2">Best in Evening Gown</button>
                             
                             <!-- Get Top 10 -->
-                            <button class="button btn btn-primary" @click="get_top_10" :disabled="round<2">Get Top 10</button>
+                            <button class="button btn btn-primary" @click="get_top_10">Get Top 10</button>
                             <!-- Get Top 5 -->
-                            <button class="button btn btn-primary" @click="get_top_5" :disabled="round<2">Get Top 5</button>
+                            <button class="button btn btn-primary" @click="get_top_5">Get Top 5</button>
                             <!-- Get Top 3 -->
-                            <button class="button btn btn-primary" @click="get_top_3" :disabled="round<3"> Get Top 3 </button>
+                            <button class="button btn btn-primary" @click="get_top_3"> Get Top 3 </button>
                             <!-- Get Winner -->
-                            <button class="button btn btn-primary" @click="get_final_scores" :disabled="round<3"> Get Final Scores </button>
+                            <button class="button btn btn-primary" @click="get_final_scores"> Get Final Scores </button>
                         </div>
                     </div>
                 </section>
