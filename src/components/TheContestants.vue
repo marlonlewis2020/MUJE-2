@@ -17,7 +17,7 @@
         data-toggle="modal" 
         data-target="#viewContestantModal" 
         class="card">
-          <img class="card-img-top" :src="`src/components/images/${lady['photo']}`" alt="Card image cap">
+          <img class="card-img-top" :src="`./images/${lady['photo']}`" alt="Card image cap">
           <div class="card-body">
             <h5 class="card-title">{{ lady['contestant_no'] }}</h5>
             <p class="card-text">{{ lady['title'] }}</p>

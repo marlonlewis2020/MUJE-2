@@ -212,8 +212,8 @@
                     <div class="results">
                         <table class="table">
                             <thead class="table-stripe">
-                                <th v-if="result_title == 'Top 3 Final Scores'">Position</th>
-                                <th>Contestant No.</th>
+                                <th v-if="result_title == 'Top 3 Final Scores'" style="width:30px;">Position</th>
+                                <th>No.</th>
                                 <th>Name</th>
                                 <th>Title</th>
                                 <th>Score</th>
@@ -300,7 +300,6 @@
 <style>
 
     .buttons {
-        position:fixed;
         float:left;
         margin-right:20px;
         width:120px;
@@ -334,6 +333,10 @@
         width:fit-content;
         margin-right:10px;
         bottom:5px;
+    }
+
+    .table {
+        width: 100%;
     }
 
 </style>

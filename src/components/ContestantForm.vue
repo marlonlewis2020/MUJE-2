@@ -39,7 +39,7 @@
 
                     <div class="section2">
                       <div class="form-group">
-                        <label for="title"> Title </label><span><small>(i.e. Miss Company Name)</small></span>
+                        <label for="title"> Sponsor </label><span><small>(i.e. Company Name)</small></span>
                         <input class="form-control" type="text" name="title" id="title">
                       </div>
                       
