@@ -14,12 +14,8 @@ export default defineConfig({
   server: {
     proxy: {
       '^/api*': {
-        // target: 'http://127.0.0.1:8080/'
-        target: 'http://192.168.73.171:8080/'
-      },
-      // '^/app/static/uploads*' : {
-      //   target: 'http://127.0.0.1:8080/'
-      // }
+        target: 'http://192.168.100.65:8080/'
+      }
     }
   }
 })

@@ -14,15 +14,15 @@
     <div class="row cards">
         <div v-for="(lady, index) in ladies"
         :key="index"
-        data-toggle="modal" 
-        data-target="#viewContestantModal" 
+        
         class="card">
-          <img class="card-img-top" :src="`./images/${lady['photo']}`" alt="Card image cap">
+          <img class="card-img-top" :src="`./src/components/images/${lady['photo']}`" alt="Card image cap">
           <div class="card-body">
-            <h5 class="card-title">{{ lady['contestant_no'] }}</h5>
+            <h5 class="card-title">Contestant No. {{ lady['contestant_no'] }}</h5>
             <p class="card-text">{{ lady['title'] }}</p>
-            <!-- Only allow girl to be reated if the section is opened -->
-            <input type="button" value="Score" class="btn btn-primary" @click="view(index)" :disabled="is_open(index)">
+            <!-- Only allow contestant to be rated if the section is opened -->
+            <input type="button" value="Score" class="score_btn btn btn-primary" @click="view(index)" 
+            data-toggle="modal" data-target="#viewContestantModal" >
           </div>
         </div>
     </div>
@@ -209,6 +209,13 @@
     padding: 7px;
   }
 
+  .card-img-top {
+    width:100%;
+    height:170px;
+    margin:0;
+    padding:0;
+  }
+
   .section_buttons {
     display:flex;
     flex-direction:row;
@@ -221,6 +228,11 @@
     border:none;
     box-shadow: 2px 2px gray;
   }
+
+  .score_btn {
+    width:65px;
+  }
+
   .button:hover {
     color:blue;
     box-shadow: 1px 1px gray;

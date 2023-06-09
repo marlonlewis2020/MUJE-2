@@ -7,19 +7,19 @@
   <div class="container">
     <div id="home-photo" class="card home-card no-gutters">
       <div class="card-image">
-        <img id="home-card-photo" src="./icons/oil-tanker.png" alt="home page photo"/>
+        <img id="home-card-photo" src="./icons/muje-logo.jpg" alt="home page photo"/>
       </div>
     </div>
 
     <div id="home-actions" class="card home-card">
       <div class="card-body text-center">
         <h1 class="card-title">
-          <img id="camera"  class="icon-img" src="./icons/OIP.jpeg" alt="camera image">
+          <!-- <img id="camera"  class="icon-img" src="./icons/muje-logo.jpg" alt="home page image"> -->
           <!-- add camera icon -->
-          MUJE
+          Miss Universe Jamaica East
         </h1>
         <hr>
-        <p class="card-text">Miss Universe Jamaica East Scoring Portal</p>
+        <p class="card-text">Welcome to the Miss Universe Jamaica East Scoring Portal.</p>
       </div>
       <div class="buttons text-center">
           <a href="/register" class="card-link btn btn-success">Register</a>

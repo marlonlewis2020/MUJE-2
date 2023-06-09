@@ -186,7 +186,7 @@
                         <div class="buttons">
                             <!-- close round -->
                             <section class="rounds prelims">
-                                <button class="button btn btn-danger" @click="close_round(1)">Close PrelimsVoting</button>
+                                <button class="button btn btn-danger" @click="close_round(1)">Close Prelims Voting</button>
                                 <button class="button btn btn-warning" @click="open_round(1)"><small>Open Prelims Voting </small></button>
                             </section>
                             
@@ -306,7 +306,7 @@
     }
 
     .rounds {
-        margin-bottom:20px;
+        margin-bottom:10px;
     }
 
     .controls {
@@ -322,11 +322,12 @@
         display: flex;
         flex-direction: row;
         justify-content:center;
-
+        margin-bottom:35px;
     }
 
     .button {
-        margin-top: 10px;
+        margin-top: 1px;
+        height:100px;
     }
 
     .adds {

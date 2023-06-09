@@ -1,6 +1,6 @@
 <template>
     <div v-if="preview" class="preview">
-        <img id="preview-image" :src="`${lady['photo']}`" alt="image preview"/>
+        <img id="preview-img" :src="`./src/components/images/${lady['photo']}`" alt="image preview" class="preview-img"/>
     </div>
     <form id="addPostForm" action="" method="post" enctype="multipart/form-data">
         <div class="form-group">
@@ -9,7 +9,7 @@
                 <option v-for="mark, index in numbers" :key="index" :value="mark">{{ mark }}</option>
             </select>
         </div>
-        <input type="button" value="SAVE" @click="set_score">
+        <input id="save" type="button" value="SAVE" @click="set_score" class="form-control btn btn-primary">
     </form>
 </template>
 
@@ -26,12 +26,21 @@
 
     function set_score() {
         emit("scored", score.value);
+        score.value = 0;
     }
 
 </script>
 
 <style scoped>
     
-
+    .preview, #preview-img {
+        width:100%;
+    }
+        
+    #save {
+        margin-top:30px;
+        justify-content: center;
+        align-items: center;
+    }
 
 </style>

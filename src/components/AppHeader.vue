@@ -3,9 +3,9 @@
   <nav class="navbar navbar-expand-lg navbar-dark fixed-top" id="mainNav">
       <div class="container-fluid">
           <div class="brand">
-              <a v-if="login" class="navbar-brand" href="/dashboard"><img class="head-img" src="../components/icons/woman_avatar.png" alt="camera image"> MUJE</a>
+              <a v-if="login" href="/dashboard"><img class="navbar-brand head-img" src="./icons/miss-universe.png" alt="miss universe image"> MUJE</a>
           </div>
-          <a class="navbar-brand" href="#page-top"><img class="head-img" src="../components/icons/woman_avatar.png" alt="..." /></a>
+          <a href="#page-top"><img class="navbar-brand head-img" src="./icons/miss-universe.png" alt="female image" /></a>
           <div class="menu float-end">
               <button
                   class="navbar-toggler"
@@ -80,7 +80,7 @@
   @import url('https://fonts.googleapis.com/css2?family=Lobster');
 
   .navbar {
-    background-color: blue;
+    background-color: rgb(67, 9, 122);
     margin-bottom: 30px;
   }
   .navbar-brand {
@@ -88,9 +88,7 @@
   }
 
   .head-img {
-    width:36px;
-    padding-bottom: 10px;
-    padding-right: 6px;
+    width:64px;
   }
   header {
     margin-bottom: 200px;
@@ -105,9 +103,13 @@
     color: white !important;
   }
 
-  li {
-    width:80px;
+  li, .nav-item {
+    width:150px;
     margin: 0 10px;
+  }
+
+  li, .nav-item:hover {
+    color:goldenrod;
   }
 
   a:hover {

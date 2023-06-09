@@ -10,51 +10,51 @@
                   <div class="form-group admin">
                     <h5>Account Type</h5>
 
-                    <div class="form-group" v-if="type=='admin'" :required="type=='admin'">
+                    <div class="form-group" v-if="type=='admin' || type=='chief'">
                       <label> User Role </label><span>*</span>
-                      <select name="customer" id="select_customer" class="form-control">
-                          <option></option>
+                      <select v-model="user_role" name="customer" id="select_customer" class="form-control" required>
                           <option 
                               v-for="(role, index) in roles" 
                               :value="role.toLowerCase()" 
-                              :key='index' > {{ role }}
+                              :key='index' :selected="index==2"> {{ role }}
+                          </option>
+                      </select>
+                    </div>
+
+                    <div class="form-group" v-if="type=='judge'">
+                      <label> User Role </label><span>*</span>
+                      <select v-model="user_role" name="customer" id="select_customer" class="form-control" required>
+                          <option></option>
+                          <option 
+                              value="judge" selected> Judge
                           </option>
                       </select>
                     </div>
 
                     <div class="form-group" required>
                       <label for="region"> Region </label><span>*</span>
-                      <select name="region" id="region">
+                      <select name="region" id="region" class="form-control">
                         <option value="East" selected>East</option>
                       </select>
                     </div>
                   </div>
 
-                  <div class="form-group biography">
+                  <!-- <div class="form-group biography">
                     <h5>Biography</h5>
-                    <div class="form-group">
-                      <label for="name"> Full Name </label>
-                      <input type="text" name="name" id="name">
-                    </div>
-                    <div class="form-group">
-                      <label for="email"> E-mail </label>
-                      <input type="email" name="email" id="email">
-                    </div>
-                  </div>
-                  
+                  </div>  -->
                   <div class="form-group login">
                     <h5>Login Details</h5>
                     <div class="form-group" required>
                       <label for="username"> Username </label><span>*</span>
-                      <input v-model="username" type="text" name="username" id="username" :class="{'is-invalid':username_error}" required>
+                      <input v-model="username" type="text" name="username" id="username" class="form-control" :class="{'is-invalid':username_error}" required>
                     </div>
                     <div class="form-group" required>
                       <label for="password"> Password </label><span>*</span>
-                      <input v-model="password" type="password" name="password" id="password" :class="{'is-invalid':password_error}" required>
+                      <input v-model="password" type="password" name="password" id="password" class="form-control" :class="{'is-invalid':password_error}" required>
                     </div>
                     <div class="form-group" required>
                       <label for="confirm">Confirm Password</label><span>*</span>
-                      <input v-model="confirm" type="password" name="confirm" id="confirm" :class="{'is-invalid':confirm_error}" required>
+                      <input v-model="confirm" type="password" name="confirm" id="confirm" class="form-control" :class="{'is-invalid':confirm_error}" required>
                     </div>
                   </div>
               </div>
@@ -92,10 +92,12 @@
     import { failed, confirmed, clear, close, confirm_submit } from '../js/form-controls';
     const type:string = localStorage['role'];
 
-    let roles:string[] = ['Chief', 'Admin', 'Judge'];
+    let roles:string[] = ['Admin', 'Chief', 'Judge'];
     let username = ref("");
     let password = ref("");
     let confirm = ref("");
+    let user_role = ref("");
+    let region = ref("");
 
     let username_error = ref(false);
     let password_error = ref(false);
@@ -105,7 +107,7 @@
       $('input, select').attr('disabled', 'disabled');
 
       if (form_validated()) {
-        confirm_submit(e, "Are you sure you want to add new user?");
+        submit();
       } else {
         $('input, select').removeAttr('disabled');
       }
@@ -123,7 +125,7 @@
         failed("Password cannot be empty.");
       }
 
-      if (confirm.value==password.value) {
+      if (confirm.value!==password.value) {
         validated = false;
         password.value = "";
         confirm.value = "";
@@ -133,29 +135,37 @@
     }
 
     function submit() {
-        let form = new FormData($('#newUserForm')[0]);
+        let form = new FormData();
+        form.append('username', username.value);
+        form.append('password', password.value);
+        form.append('confirm', confirm.value);
+        form.append('name', username.value);
+        form.append('role', user_role.value);
+        form.append('email', "marlonlewis483@gmail.com");
         let url = "/api/v1/auth/register";
-        close();
-        fetch(url, {
-          headers:{
-            Authorization: `bearer ${localStorage['token']}`
-          },
-          method:'POST',
-          body:form
-        })
-        .then((response)=>response.json())
-        .then((data)=>{
-          if (data.status=="success"){
-            // notify of success
-            confirmed('User has been added successfully');
-            close();
-          } else {
-            // notify of error
-            failed('Oops! \n\n'+data.message);
-            password.value = "";
-            confirm.value = "";
-          }
-        })
+        if (form_validated()) {
+          close();
+          fetch(url, {
+            headers:{
+              Authorization: `bearer ${localStorage['token']}`
+            },
+            method:'POST',
+            body:form
+          })
+          .then((response)=>response.json())
+          .then((data)=>{
+            if (data.status=="success"){
+              // notify of success
+              confirmed('User has been added successfully');
+              close();
+            } else {
+              // notify of error
+              failed('Oops! \n\n'+data.message);
+              password.value = "";
+              confirm.value = "";
+            }
+          })
+        }
     }
 </script>
 
@@ -218,5 +228,9 @@
       margin-left:15px;
     }
 
+  }
+
+  h5 {
+    margin-top: 35px;
   }
 </style>

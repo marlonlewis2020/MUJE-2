@@ -24,7 +24,7 @@ class User(db.Model, UserMixin):
         self.role = role
         self.name = name
         self.email = email
-        self.region = region
+        self.region = region or "East"
         try:
             db.session.add(self)
             db.session.commit()
