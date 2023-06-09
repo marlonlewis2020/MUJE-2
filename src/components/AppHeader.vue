@@ -46,8 +46,7 @@
   <!-- Masthead-->
   <header class="masthead">
       <div class="container">
-          <div class="masthead-subheading">Welcome To The MUJE Judging App!</div>
-          <div class="masthead-heading text-uppercase">Let's Begin Scoring The Ladies</div>
+          <div class="masthead-subheading">The MUJE Judging App!</div>
       </div>
   </header>
 </template>
@@ -91,7 +90,8 @@
     width:64px;
   }
   header {
-    margin-bottom: 200px;
+    margin-top: 100px;
+    margin-bottom: 50px;
   }
 
   a {

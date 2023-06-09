@@ -202,32 +202,36 @@
 
 <style scoped>
 
-@media only screen and (min-width: 700px) {
-  .cards {
-    display:grid;
-    grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
-    grid-gap: 5px;
-    padding: 7px;
+  @media only screen and (min-width: 700px) {
+    .cards {
+      display:grid;
+      grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+      grid-gap: 5px;
+      padding: 7px;
+    }
   }
-}
 
-@media only screen and (max-width: 700px) {
-  .cards {
-    display:grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    grid-gap: 5px;
-    padding: 7px;
+  @media only screen and (max-width: 700px) {
+    .cards {
+      display:grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      grid-gap: 5px;
+      padding: 7px;
+    }
   }
-}
 
-@media only screen and (max-width: 400px) {
-  .cards {
-    display:grid;
-    grid-template-columns: 1fr 1fr;
-    grid-gap: 5px;
-    padding: 7px;
+  @media only screen and (max-width: 400px) {
+    .cards {
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      grid-gap: 5px;
+      padding: 7px;
+    }
   }
-}
+
+  .card {
+    display: flex;
+  }
 
   .card-img-top {
     width:100%;
@@ -251,6 +255,7 @@
 
   .score_btn {
     width:65px;
+    margin: 0 auto;
   }
 
   .button:hover {
