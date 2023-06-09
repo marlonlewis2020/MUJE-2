@@ -340,4 +340,8 @@
         width: 100%;
     }
 
+    .table_results {
+        margin-left:25px;
+    }
+
 </style>
