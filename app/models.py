@@ -284,7 +284,7 @@ class PrelimScoring(db.Model):
     def get_final_scores():
         scores = []
         if Section.round_closed(1):
-            scores = db.session.execute(text("SELECT p.contestant_no, c.name, c.title, ROUND(SUM(p.interview + p.swimsuit + p.ballroom) / COUNT(p.judge)) as average, c.photo FROM prelimscoring as p JOIN contestants as c ON p.contestant_no=c.contestant_no GROUP BY p.contestant_no ORDER BY average DESC")).all()
+            scores = db.session.execute(text("SELECT p.contestant_no, c.name, c.title, ROUND(SUM(p.interview + p.swimsuit + p.ballroom) / (COUNT(p.judge)*3)) as average, c.photo FROM prelimscoring as p JOIN contestants as c ON p.contestant_no=c.contestant_no GROUP BY p.contestant_no ORDER BY average DESC")).all()
         return scores
         
     @staticmethod

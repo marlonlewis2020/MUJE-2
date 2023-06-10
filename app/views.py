@@ -345,7 +345,7 @@ def get_top_five():
         payload = get_request_payload()
         uid = payload['id']
         load_user(str(uid))
-        if current_user.role == 'chief' or current_user.role == 'admin':
+        if current_user.role:
             response['data'] = PrelimScoring.get_top_five()
             if not len(response['data']):
                 response['status']='error'
@@ -388,7 +388,7 @@ def get_top_three():
         payload = get_request_payload()
         uid = payload['id']
         load_user(str(uid))
-        if current_user.role == 'chief' or current_user.role == 'admin':
+        if current_user.role:
             response['data'] = TopFiveScoring.get_top_three()
             if not len(response['data']):
                 response['status']='error'
