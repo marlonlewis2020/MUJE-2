@@ -4,7 +4,12 @@
     </div>
     <form id="addPostForm" action="" method="post" enctype="multipart/form-data">
         <div class="form-group">
-            <label for="score">Score</label>
+            <br />
+            <h5>{{ lady['name'] }}</h5>
+            <small>{{ lady['title'] }}</small>
+            <br/>
+            <br/>
+            <label for="score"><strong>Score</strong></label>
             <select v-model="score" name="score" id="score" cols="30" rows="2" class="form-control" maxlength="75">
                 <option v-for="mark, index in numbers" :key="index" :value="mark">{{ mark }}</option>
             </select>

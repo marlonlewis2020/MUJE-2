@@ -18,7 +18,8 @@
         class="card">
           <img class="card-img-top" :src="`./src/components/images/${lady['photo']}`" alt="Card image cap">
           <div class="card-body">
-            <h5 class="card-title">Contestant No. {{ lady['contestant_no'] }}</h5>
+            <h5 class="card-title">Contestant No. {{ lady['contestant_no'] }} </h5>
+            <strong><small>{{  lady['name'] }} </small></strong><br/><br/>
             <p class="card-text">{{ lady['title'] }}</p>
             <!-- Only allow contestant to be rated if the section is opened -->
             <input type="button" value="Score" class="score_btn btn btn-primary" @click="view(index)" 
