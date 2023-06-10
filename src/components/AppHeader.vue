@@ -29,7 +29,7 @@
                       <li class="nav-item" v-if="!login" >
                           <RouterLink class="text-white nav-link" to="/register">Register</RouterLink>
                       </li>
-                      <li class="nav-item" v-if="login">
+                      <li class="nav-item" v-if="login && admin">
                           <RouterLink class="text-white nav-link" to="/cpanel">Control Panel</RouterLink>
                       </li>
                       <li class="nav-item" v-if="login && admin">
